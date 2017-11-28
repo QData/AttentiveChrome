@@ -4,10 +4,11 @@ Reference Paper: [Attend and Predict: Using Deep Attention Model to Understand G
 
 BibTex Citation:
 ```
-@article{singh2017deepchrome,
+@inproceedings{singh2017attend,
   title={Attend and Predict: Understanding Gene Regulation by Selective Attention on Chromatin},
   author={Singh, Ritambhara and Lanchantin, Jack and Sekhon, Arshdeep  and Qi, Yanjun},
-  journal={arXiv preprint arXiv:1708.00339},
+  booktitle={Advances in Neural Information Processing Systems},
+  pages={6769--6779},
   year={2017}
 }
 ```
