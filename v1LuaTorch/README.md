@@ -31,6 +31,7 @@ We divided the genes into 3 separate sets for training, validation and testing. 
 
 We performed training and validation on the first 2 sets and then reported AUC scores of best performing epoch model for the third test data set. 
 
-See the v1LuaTorch or v2PyTorch directories to run the code
-```
+**Running The Model** 
+
+See the v1LuaTorch or v2PyTorch directories to run the code.
 
