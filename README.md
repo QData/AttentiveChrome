@@ -31,16 +31,7 @@ We divided the genes into 3 separate sets for training, validation and testing. 
 
 We performed training and validation on the first 2 sets and then reported AUC scores of best performing epoch model for the third test data set. 
 
-Toy dataset has been provided inside "code/data" folder.
+**Running The Model** 
 
-After downloading "code/" folder:
-
-To perform training : 
-```
-th doall.lua
-```
-To perform testing/Get visualization output: 
-```
-the doall_eval.lua
-```
+See the v1LuaTorch or v2PyTorch directories to run the code.
 
