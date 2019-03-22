@@ -1,0 +1,48 @@
+defined_as: dataloader.HMData
+args:
+  input_file:
+    doc: "Path of the histone modification read count file."
+    example:
+      url: https://zenodo.org/record/2577446/files/Cell1.test.csv?download=1
+      md5: 7188e0f19563d7c907dc3787e62b4734
+  expr_file:
+    doc: "Path of gene expression file (RPKM read count file)"
+    example:
+      url: https://zenodo.org/record/2577446/files/Cell1.expr.csv?download=1 
+      md5: 4bccc5626325a4012145e6e4c6f16b4c
+  bin_size:
+    doc: "Size of bin"
+    optional: true
+dependencies:
+    conda: # install via conda
+      - python=3.5
+      - h5py
+      - soumith::pytorch  # specify packages from other channels via <channel>::<package> 
+      - numpy     
+info: # General information about the dataloader
+    authors: 
+        - name: Ritambhara Singh, Jack Lanchantin, Arshdeep Sekhon, Yanjun Qi
+          github: jacklanchantin
+          email: jjl5sw@virginia.edu
+    contributors:
+        - name: Jeffrey Yoo
+    doc: "Dataloader for Gene Expression Prediction"
+    cite_as: https://doi.org:/10.1101/329334 
+    trained_on: Histone Modidification and RNA Seq Data From Roadmad/REMC database # short dataset description
+    license: MIT
+output_schema:
+  inputs:
+    associated_metadata: geneID, diff, abs_A
+    doc: Histone Modification Bin Matrix
+    shape: (200, 5)  # array shape of a single sample (omitting the batch dimension)
+  metadata:
+    geneID:
+      doc: "gene ID"
+      type: str
+    diff:
+      doc: "TBD"
+      type: float
+    abs_A:
+      doc: "TBD"
+      type: float
+type: Dataset
