@@ -48,16 +48,13 @@ args = parser.parse_args()
 
 
 
-
 torch.manual_seed(1)
-
 
 
 model_name = ''
 model_name += (args.cell_type)+('_')
 
 model_name+=args.model_name
-
 
 
 

@@ -3,13 +3,8 @@ args:
   input_file:
     doc: "Path of the histone modification read count file."
     example:
-      url: https://zenodo.org/record/2577446/files/Cell1.test.csv?download=1
-      md5: 7188e0f19563d7c907dc3787e62b4734
-  expr_file:
-    doc: "Path of gene expression file (RPKM read count file)"
-    example:
-      url: https://zenodo.org/record/2577446/files/Cell1.expr.csv?download=1 
-      md5: 4bccc5626325a4012145e6e4c6f16b4c
+      url: https://zenodo.org/record/2605593/files/Cell1.test.csv?download=1
+      md5: 332d389b6860e39f9863c54544cbd2a4
   bin_size:
     doc: "Size of bin"
     optional: true
@@ -34,7 +29,7 @@ output_schema:
   inputs:
     associated_metadata: geneID, diff, abs_A
     doc: Histone Modification Bin Matrix
-    shape: (200, 5)  # array shape of a single sample (omitting the batch dimension)
+    shape: (100, 5)  # array shape of a single sample (omitting the batch dimension)
   metadata:
     geneID:
       doc: "gene ID"

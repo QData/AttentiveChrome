@@ -3,8 +3,8 @@ args:
   module_file: models.py
   module_obj: att_chrome_model
   weights:
-    url: https://zenodo.org/record/2581553/files/Cell1_attchrome_R2_model.pt?download=1
-    md5: 591925cb14c369456b01292e2a3c8fe0
+    url: https://zenodo.org/record/2605593/files/Cell1_attchrome_R2_model.pt?download=1
+    md5: 44627361842c2946c697da0b1ee6502d
 default_dataloader: . # path to the dataloader directory. Or to the dataloader class, e.g.: `kipoiseq.dataloaders.SeqIntervalDl
 info: # General information about the model
     authors: 
@@ -26,7 +26,7 @@ dependencies:
       - soumith::torchvision    
 schema:  # Model schema
     inputs:
-        shape: (200, 5)  # array shape of a single sample (omitting the batch dimension)
+        shape: (100, 5)  # array shape of a single sample (omitting the batch dimension)
         doc: "Histone Modification Bin Matrix"
     targets:
         shape: (1, )
