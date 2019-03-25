@@ -156,7 +156,7 @@ def train(TrainData):
 		start,end = (idx*args.batch_size), min((idx*args.batch_size)+args.batch_size, TrainData.dataset.__len__())
 	
 
-		inputs_1 = Sample['X_A']
+		inputs_1 = Sample['input']
 		batch_diff_targets = Sample['label'].unsqueeze(1).float()
 
 		
@@ -200,7 +200,7 @@ def test(ValidData,split_name):
 		start,end = (idx*args.batch_size), min((idx*args.batch_size)+args.batch_size, ValidData.dataset.__len__())
 		optimizer.zero_grad()
 
-		inputs_1 = Sample['X_A']
+		inputs_1 = Sample['input']
 		batch_diff_targets= Sample['label'].unsqueeze(1).float()
 		
 

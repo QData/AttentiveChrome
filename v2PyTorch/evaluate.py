@@ -50,7 +50,7 @@ def compute_auc(all_targets,all_predictions):
 
 def compute_metrics(predictions, targets):
 
-	# stop()
+
 	pred=predictions.numpy()
 	targets=targets.numpy()
 

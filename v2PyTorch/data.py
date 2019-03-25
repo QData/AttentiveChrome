@@ -70,7 +70,7 @@ class HMData(Dataset):
 		label=self.c1[i]['expr']
 		geneID=self.c1[i]['geneID']
 		sample={'geneID':geneID,
-			   'X_A':final_data_c1,
+			   'input':final_data_c1,
 			   'label':label,
 			   }
 		return sample
