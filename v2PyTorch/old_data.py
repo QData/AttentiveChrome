@@ -60,19 +60,18 @@ def loadData(filename,windows,gene_dict,threshold):
 		hm4=torch.zeros(windows,1)
 		hm5=torch.zeros(windows,1)
 		for w in range(0,windows):
-			hm1[w][0]=int(data[i+w][2])
-			hm2[w][0]=int(data[i+w][3])
-			hm3[w][0]=int(data[i+w][4])
-			hm4[w][0]=int(data[i+w][5])
-			hm5[w][0]=int(data[i+w][6])
+			hm1[w][0]=int(data[i+w][1])
+			hm2[w][0]=int(data[i+w][2])
+			hm3[w][0]=int(data[i+w][3])
+			hm4[w][0]=int(data[i+w][4])
+			hm5[w][0]=int(data[i+w][5])
 		geneID=str(data[i][0].split("_")[0])
 
-		thresholded_expr = int(data[i+w][7])
-
-		# if gene_dict[geneID] >= threshold:
-		# 	thresholded_expr = 1
-		# else:
-		# 	thresholded_expr = 0
+		# stop()
+		if gene_dict[geneID] >= threshold:
+			thresholded_expr = 1
+		else:
+			thresholded_expr = 0
 		attr[count]={
 			'geneID':geneID,
 
@@ -115,17 +114,17 @@ def load_data(args):
 
 	'''
 	print("==>loading train data")
-	# gene_dict1=loadDict(args.data_root+args.cell_1+".expr.csv")
-	# expr_list=np.array(list(gene_dict1.values()))
-	# threshold = np.median(expr_list)
+	gene_dict1=loadDict(args.data_root+args.cell_1+".expr.csv")
+	expr_list=np.array(list(gene_dict1.values()))
+	threshold = np.median(expr_list)
 
-	cell_train_dict1=loadData(args.data_root+"/"+args.cell_1+"/classification/train.csv",args.n_bins,None,None)
+	cell_train_dict1=loadData(args.data_root+"/"+args.cell_1+".train.csv",args.n_bins,gene_dict1,threshold)
 	train_inputs = HMData(cell_train_dict1)
 	print("==>loading valid data")
-	cell_valid_dict1=loadData(args.data_root+"/"+args.cell_1+"/classification/valid.csv",args.n_bins,None,None)
+	cell_valid_dict1=loadData(args.data_root+"/"+args.cell_1+".valid.csv",args.n_bins,gene_dict1,threshold)
 	valid_inputs = HMData(cell_valid_dict1)
 	print("==>loading test data")
-	cell_test_dict1=loadData(args.data_root+"/"+args.cell_1+"/classification/test.csv",args.n_bins,None,None)
+	cell_test_dict1=loadData(args.data_root+"/"+args.cell_1+".test.csv",args.n_bins,gene_dict1,threshold)
 	test_inputs = HMData(cell_test_dict1)
 
 	

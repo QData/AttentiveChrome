@@ -31,13 +31,13 @@ parser.add_argument('--clip', type=float, default=1,help='gradient clipping')
 parser.add_argument('--epochs', type=int, default=90, help='upper epoch limit')
 parser.add_argument('--batch_size', type=int, default=10, help='')
 parser.add_argument('--dropout', type=float, default=0.5, help='dropout applied to layers (0 = no dropout) if n_layers LSTM > 1')
-parser.add_argument('--cell_1', type=str, default='Cell1', help='cell type 1')
+parser.add_argument('--cell_1', type=str, default='E003', help='cell type 1')
 parser.add_argument('--save_root', type=str, default='./Results/', help='where to save')
 parser.add_argument('--data_root', type=str, default='./data/', help='data location')
 parser.add_argument('--gpuid', type=int, default=0, help='CUDA gpu')
 parser.add_argument('--gpu', type=int, default=0, help='CUDA gpu')
 parser.add_argument('--n_hms', type=int, default=5, help='number of histone modifications')
-parser.add_argument('--n_bins', type=int, default=200, help='number of bins')
+parser.add_argument('--n_bins', type=int, default=100, help='number of bins')
 parser.add_argument('--bin_rnn_size', type=int, default=32, help='bin rnn size')
 parser.add_argument('--num_layers', type=int, default=1, help='number of layers')
 parser.add_argument('--unidirectional', action='store_true', help='bidirectional/undirectional LSTM')
@@ -174,16 +174,13 @@ def train(TrainData):
 		batch_size = inputs_1.size(0)
 
 
-		# for raw models: raw_d, raw_c, raw
-		# stop()
 		# batch_diff_predictions,batch_beta,batch_alpha = model(inputs_1.type(dtype))
 		batch_diff_predictions= model(inputs_1.type(dtype))
 
-		loss =  F.binary_cross_entropy_with_logits(batch_diff_predictions.cpu(), batch_diff_targets_c1,reduction='mean')
+		loss = F.binary_cross_entropy_with_logits(batch_diff_predictions.cpu(), batch_diff_targets_c1,reduction='mean')
 
-		all_attention_bin[start:end]=batch_alpha.data
-		all_attention_hm[start:end]=batch_beta.data
-		# loss = DiffLoss(batch_diff_predictions,batch_diff_targets.type(dtype))
+		# all_attention_bin[start:end]=batch_alpha.data
+		# all_attention_hm[start:end]=batch_beta.data
 
 
 		diff_predictions[start:end] = batch_diff_predictions.data.cpu()
@@ -224,16 +221,12 @@ def test(ValidData):
 		all_gene_ids[start:end]=Sample['geneID']
 		batch_size = inputs_1.size(0)
 
-
-		# for raw models: raw_d, raw_c, raw
 		# batch_diff_predictions,batch_beta,batch_alpha = model(inputs_1.type(dtype))
 		batch_diff_predictions = model(inputs_1.type(dtype))
 
-		loss =  F.binary_cross_entropy_with_logits(batch_diff_predictions.cpu(), batch_diff_targets_c1,reduction='mean')
-		all_attention_bin[start:end]=batch_alpha.data
-		all_attention_hm[start:end]=batch_beta.data
-		# loss = DiffLoss(batch_diff_predictions,batch_diff_targets.type(dtype))
-
+		loss = F.binary_cross_entropy_with_logits(batch_diff_predictions.cpu(), batch_diff_targets_c1,reduction='mean')
+		# all_attention_bin[start:end]=batch_alpha.data
+		# all_attention_hm[start:end]=batch_beta.data
 
 		diff_predictions[start:end] = batch_diff_predictions.data.cpu()
 		per_epoch_loss += loss.item()
