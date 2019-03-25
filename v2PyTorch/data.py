@@ -71,7 +71,7 @@ class HMData(Dataset):
 		geneID=self.c1[i]['geneID']
 		sample={'geneID':geneID,
 			   'X_A':final_data_c1,
-			   'diff':label,
+			   'label':label,
 			   }
 		return sample
 

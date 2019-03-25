@@ -157,7 +157,7 @@ def train(TrainData):
 	
 
 		inputs_1 = Sample['X_A']
-		batch_diff_targets = Sample['diff'].unsqueeze(1).float()
+		batch_diff_targets = Sample['label'].unsqueeze(1).float()
 
 		
 		optimizer.zero_grad()
@@ -201,7 +201,7 @@ def test(ValidData,split_name):
 		optimizer.zero_grad()
 
 		inputs_1 = Sample['X_A']
-		batch_diff_targets= Sample['diff'].unsqueeze(1).float()
+		batch_diff_targets= Sample['label'].unsqueeze(1).float()
 		
 
 		# batch_predictions,batch_beta,batch_alpha = model(inputs_1.type(dtype))
@@ -229,7 +229,7 @@ best_valid_avgAUC=-1
 best_test_avgAUC=-1
 if(args.test_on_saved_model==False):
 	for epoch in range(0, args.epochs):
-		print('=---------------------------------------- Training '+str(epoch+1)+' -----------------------------------=')
+		print('---------------------------------------- Training '+str(epoch+1)+' -----------------------------------')
 		predictions,diff_targets,alpha_train,beta_train,train_loss,_ = train(Train)
 		train_avgAUPR, train_avgAUC = evaluate.compute_metrics(predictions,diff_targets)
 
@@ -255,8 +255,13 @@ if(args.test_on_saved_model==False):
  
 	print("finished training!!")
 	print("best validation avgAUC:",best_valid_avgAUC)
-	print("testing")
-	model=torch.load(model_dir+"/"+model_name+'_avgAUC_model.pt')
+	print("best test avgAUC:",best_test_avgAUC)
+
+	# print("testing")
+	# model=torch.load(model_dir+"/"+model_name+'_avgAUC_model.pt')
+	# predictions,diff_targets,alpha_test,beta_test,test_loss,gene_ids_test = test(Test,'Testing')
+	# test_avgAUPR, test_avgAUC = evaluate.compute_metrics(predictions,diff_targets)
+	# print("best test avgAUC:",test_avgAUC)
 
 
 	if(args.save_attention_maps):
