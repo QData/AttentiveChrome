@@ -136,18 +136,13 @@ if(args.test_on_saved_model==False):
 		p.data.uniform_(-0.1,0.1)
 
 
-BCELoss = nn.BCELoss(size_average=True).type(dtype)
-DiffLoss = nn.MSELoss(size_average=True).type(dtype)
-AuxLoss = nn.MSELoss(size_average=True).type(dtype)
-# ConLoss = ContrastiveLoss().type(dtype)
-
 optimizer = optim.Adam(model.parameters(), lr = args.lr)
 #optimizer = optim.SGD(model.parameters(), lr = args.lr, momentum=args.momentum)
 def train(TrainData):
 	model.train()
 	# initialize attention
 	diff_targets = torch.zeros(TrainData.dataset.__len__(),1)
-	diff_predictions = torch.zeros(diff_targets.size(0),1)
+	predictions = torch.zeros(diff_targets.size(0),1)
 
 	all_attention_bin=torch.zeros(TrainData.dataset.__len__(),(args.n_hms*args.n_bins))
 	all_attention_hm=torch.zeros(TrainData.dataset.__len__(),args.n_hms)
@@ -157,40 +152,33 @@ def train(TrainData):
 	per_epoch_loss = 0
 	print('Training')
 	for idx, Sample in enumerate(TrainData):
-		# if(idx%100==0):
-		# 	print('TRAINING ON BATCH:',idx)
+
 		start,end = (idx*args.batch_size), min((idx*args.batch_size)+args.batch_size, TrainData.dataset.__len__())
-		optimizer.zero_grad()
-		# get HM profiles
+	
+
 		inputs_1 = Sample['X_A']
-		# get targets: both differential and cell specific expression
-		batch_diff_targets=(Sample['diff']).float().unsqueeze(1)
-		batch_diff_targets_c1=(Sample['abs_A']).float().unsqueeze(1)
-		# diff_targets[start:end,0] = batch_diff_targets[:,0]
+		batch_diff_targets = Sample['diff'].unsqueeze(1).float()
 
-		diff_targets[start:end,0] = batch_diff_targets_c1[:,0]
+		
+		optimizer.zero_grad()
+		batch_predictions= model(inputs_1.type(dtype))
 
+		loss = F.binary_cross_entropy_with_logits(batch_predictions.cpu(), batch_diff_targets,reduction='mean')
 
-		all_gene_ids[start:end]=Sample['geneID']
-		batch_size = inputs_1.size(0)
-
-
-		# batch_diff_predictions,batch_beta,batch_alpha = model(inputs_1.type(dtype))
-		batch_diff_predictions= model(inputs_1.type(dtype))
-
-		loss = F.binary_cross_entropy_with_logits(batch_diff_predictions.cpu(), batch_diff_targets_c1,reduction='mean')
-
-		# all_attention_bin[start:end]=batch_alpha.data
-		# all_attention_hm[start:end]=batch_beta.data
-
-
-		diff_predictions[start:end] = batch_diff_predictions.data.cpu()
 		per_epoch_loss += loss.item()
 		loss.backward()
 		torch.nn.utils.clip_grad_norm(model.parameters(), args.clip)
 		optimizer.step()
+
+		# all_attention_bin[start:end]=batch_alpha.data
+		# all_attention_hm[start:end]=batch_beta.data
+
+		diff_targets[start:end,0] = batch_diff_targets[:,0]
+		all_gene_ids[start:end]=Sample['geneID']
+		predictions[start:end] = batch_predictions.data.cpu()
+		
 	per_epoch_loss=per_epoch_loss/num_batches
-	return diff_predictions,diff_targets,all_attention_bin,all_attention_hm,per_epoch_loss,all_gene_ids
+	return predictions,diff_targets,all_attention_bin,all_attention_hm,per_epoch_loss,all_gene_ids
 
 
 
@@ -198,7 +186,7 @@ def test(ValidData,split_name):
 	model.eval()
 
 	diff_targets = torch.zeros(ValidData.dataset.__len__(),1)
-	diff_predictions = torch.zeros(diff_targets.size(0),1)
+	predictions = torch.zeros(diff_targets.size(0),1)
 
 	all_attention_bin=torch.zeros(ValidData.dataset.__len__(),(args.n_hms*args.n_bins))
 	all_attention_hm=torch.zeros(ValidData.dataset.__len__(),args.n_hms)
@@ -208,35 +196,29 @@ def test(ValidData,split_name):
 	per_epoch_loss = 0
 	print(split_name)
 	for idx, Sample in enumerate(ValidData):
-		# if(idx%100==0):
-		# 	print('TESTING ON BATCH:',idx)
+
 		start,end = (idx*args.batch_size), min((idx*args.batch_size)+args.batch_size, ValidData.dataset.__len__())
 		optimizer.zero_grad()
-		# get HM profiles
+
 		inputs_1 = Sample['X_A']
-		# get targets: both differential and cell specific expression
-		batch_diff_targets=(Sample['diff']).float().unsqueeze(1)
-		batch_diff_targets_c1=(Sample['abs_A']).float().unsqueeze(1)
-		diff_targets[start:end,0] = batch_diff_targets_c1[:,0]
+		batch_diff_targets= Sample['diff'].unsqueeze(1).float()
+		
 
+		# batch_predictions,batch_beta,batch_alpha = model(inputs_1.type(dtype))
+		batch_predictions = model(inputs_1.type(dtype))
 
-		all_gene_ids[start:end]=Sample['geneID']
-		batch_size = inputs_1.size(0)
-
-		# batch_diff_predictions,batch_beta,batch_alpha = model(inputs_1.type(dtype))
-		batch_diff_predictions = model(inputs_1.type(dtype))
-
-		loss = F.binary_cross_entropy_with_logits(batch_diff_predictions.cpu(), batch_diff_targets_c1,reduction='mean')
+		loss = F.binary_cross_entropy_with_logits(batch_predictions.cpu(), batch_diff_targets,reduction='mean')
 		# all_attention_bin[start:end]=batch_alpha.data
 		# all_attention_hm[start:end]=batch_beta.data
 
-		diff_predictions[start:end] = batch_diff_predictions.data.cpu()
+
+		diff_targets[start:end,0] = batch_diff_targets[:,0]
+		all_gene_ids[start:end]=Sample['geneID']
+		predictions[start:end] = batch_predictions.data.cpu()
+
 		per_epoch_loss += loss.item()
 	per_epoch_loss=per_epoch_loss/num_batches
-	return diff_predictions,diff_targets,all_attention_bin,all_attention_hm,per_epoch_loss,all_gene_ids
-
-
-
+	return predictions,diff_targets,all_attention_bin,all_attention_hm,per_epoch_loss,all_gene_ids
 
 
 
@@ -248,14 +230,14 @@ best_test_avgAUC=-1
 if(args.test_on_saved_model==False):
 	for epoch in range(0, args.epochs):
 		print('=---------------------------------------- Training '+str(epoch+1)+' -----------------------------------=')
-		diff_predictions,diff_targets,alpha_train,beta_train,train_loss,_ = train(Train)
-		train_avgAUPR, train_avgAUC = evaluate.compute_metrics(diff_predictions,diff_targets)
+		predictions,diff_targets,alpha_train,beta_train,train_loss,_ = train(Train)
+		train_avgAUPR, train_avgAUC = evaluate.compute_metrics(predictions,diff_targets)
 
-		diff_predictions,diff_targets,alpha_valid,beta_valid,valid_loss,gene_ids_valid = test(Valid,"Validation")
-		valid_avgAUPR, valid_avgAUC = evaluate.compute_metrics(diff_predictions,diff_targets)
+		predictions,diff_targets,alpha_valid,beta_valid,valid_loss,gene_ids_valid = test(Valid,"Validation")
+		valid_avgAUPR, valid_avgAUC = evaluate.compute_metrics(predictions,diff_targets)
 
-		diff_predictions,diff_targets,alpha_test,beta_test,test_loss,gene_ids_test = test(Test,'Testing')
-		test_avgAUPR, test_avgAUC = evaluate.compute_metrics(diff_predictions,diff_targets)
+		predictions,diff_targets,alpha_test,beta_test,test_loss,gene_ids_test = test(Test,'Testing')
+		test_avgAUPR, test_avgAUC = evaluate.compute_metrics(predictions,diff_targets)
 
 		if(valid_avgAUC >= best_valid_avgAUC):
 				# save best epoch -- models converge early
@@ -276,8 +258,6 @@ if(args.test_on_saved_model==False):
 	print("testing")
 	model=torch.load(model_dir+"/"+model_name+'_avgAUC_model.pt')
 
-	
-	# print("test avgAUC:",test_avgAUC)
 
 	if(args.save_attention_maps):
 		attentionfile=open(attentionmapfile,'w')
@@ -294,8 +274,8 @@ if(args.test_on_saved_model==False):
 
 else:
 	model=torch.load(model_dir+"/"+model_name+'_avgAUC_model.pt')
-	diff_predictions,diff_targets,alpha_test,beta_test,test_loss,gene_ids_test = test(Test)
-	test_avgAUPR, test_avgAUC = evaluate.compute_metrics(diff_predictions,diff_targets)
+	predictions,diff_targets,alpha_test,beta_test,test_loss,gene_ids_test = test(Test)
+	test_avgAUPR, test_avgAUC = evaluate.compute_metrics(predictions,diff_targets)
 	print("test avgAUC:",test_avgAUC)
 
 	if(args.save_attention_maps):

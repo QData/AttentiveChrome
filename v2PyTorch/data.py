@@ -12,21 +12,7 @@ import numpy as np
 
 
 
-def getlabel(c1):
-	# get log fold change of expression
-
-	label1=math.log((float(c1)+1.0),2)
-	label=[]
-	label.append(label1)
-
-	fold_change=(float(c1)+1.0)/(float(c1)+1.0)
-	log_fold_change=math.log((fold_change),2)
-	return (log_fold_change, label)
-
-
-
-
-def loadData(filename,windows,gene_dict,threshold):
+def loadData(filename,windows):
 	with open(filename) as fi:
 		csv_reader=csv.reader(fi)
 		data=list(csv_reader)
@@ -73,7 +59,6 @@ def loadData(filename,windows,gene_dict,threshold):
 	return attr
 
 
-
 class HMData(Dataset):
 	# Dataset class for loading data
 	def __init__(self,data_cell1,transform=None):
@@ -82,13 +67,11 @@ class HMData(Dataset):
 		return len(self.c1)
 	def __getitem__(self,i):
 		final_data_c1=torch.cat((self.c1[i]['hm1'],self.c1[i]['hm2'],self.c1[i]['hm3'],self.c1[i]['hm4'],self.c1[i]['hm5']),1)
-		label,orig_label=getlabel(self.c1[i]['expr'])
-		b_label_c1=orig_label[0]
+		label=self.c1[i]['expr']
 		geneID=self.c1[i]['geneID']
 		sample={'geneID':geneID,
 			   'X_A':final_data_c1,
 			   'diff':label,
-			   'abs_A':b_label_c1
 			   }
 		return sample
 
@@ -98,16 +81,16 @@ def load_data(args):
 
 	'''
 	print("==>loading train data")
-
-	cell_train_dict1=loadData(args.data_root+"/"+args.cell_type+"/classification/train.csv",args.n_bins,None,None)
+	cell_train_dict1=loadData(args.data_root+"/"+args.cell_type+"/classification/train.csv",args.n_bins)
 	train_inputs = HMData(cell_train_dict1)
-	print("==>loading valid data")
-	cell_valid_dict1=loadData(args.data_root+"/"+args.cell_type+"/classification/valid.csv",args.n_bins,None,None)
-	valid_inputs = HMData(cell_valid_dict1)
-	print("==>loading test data")
-	cell_test_dict1=loadData(args.data_root+"/"+args.cell_type+"/classification/test.csv",args.n_bins,None,None)
-	test_inputs = HMData(cell_test_dict1)
 
+	print("==>loading valid data")
+	cell_valid_dict1=loadData(args.data_root+"/"+args.cell_type+"/classification/valid.csv",args.n_bins)
+	valid_inputs = HMData(cell_valid_dict1)
+
+	print("==>loading test data")
+	cell_test_dict1=loadData(args.data_root+"/"+args.cell_type+"/classification/test.csv",args.n_bins)
+	test_inputs = HMData(cell_test_dict1)
 
 	Train = torch.utils.data.DataLoader(train_inputs, batch_size=args.batch_size, shuffle=True)
 	Valid = torch.utils.data.DataLoader(valid_inputs, batch_size=args.batch_size, shuffle=False)
