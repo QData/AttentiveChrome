@@ -22,7 +22,7 @@ import gc
 import csv
 from pdb import set_trace as stop
 
-# python train.py --cell_1=Cell1 --model_name=attchrome --epochs=120 --lr=0.0001 --data_root=data/ --save_root=Results/
+# python train.py --cell_type=Cell1 --model_name=attchrome --epochs=120 --lr=0.0001 --data_root=data/ --save_root=Results/
 
 parser = argparse.ArgumentParser(description='DeepDiff')
 parser.add_argument('--lr', type=float, default=0.0001, help='initial learning rate')
@@ -31,7 +31,7 @@ parser.add_argument('--clip', type=float, default=1,help='gradient clipping')
 parser.add_argument('--epochs', type=int, default=90, help='upper epoch limit')
 parser.add_argument('--batch_size', type=int, default=10, help='')
 parser.add_argument('--dropout', type=float, default=0.5, help='dropout applied to layers (0 = no dropout) if n_layers LSTM > 1')
-parser.add_argument('--cell_1', type=str, default='E003', help='cell type 1')
+parser.add_argument('--cell_type', type=str, default='E003', help='cell type 1')
 parser.add_argument('--save_root', type=str, default='./Results/', help='where to save')
 parser.add_argument('--data_root', type=str, default='./data/', help='data location')
 parser.add_argument('--gpuid', type=int, default=0, help='CUDA gpu')
@@ -54,7 +54,7 @@ torch.manual_seed(1)
 
 
 model_name = ''
-model_name += (args.cell_1)+('_')
+model_name += (args.cell_type)+('_')
 
 model_name+=args.model_name
 
@@ -66,7 +66,7 @@ args.bidirectional=not args.unidirectional
 print('the model name: ',model_name)
 args.data_root+=''
 args.save_root+=''
-args.dataset=args.cell_1
+args.dataset=args.cell_type
 args.data_root = os.path.join(args.data_root)
 print('loading data from:  ',args.data_root)
 args.save_root = os.path.join(args.save_root,args.dataset)
@@ -155,9 +155,10 @@ def train(TrainData):
 	num_batches = int(math.ceil(TrainData.dataset.__len__()/float(args.batch_size)))
 	all_gene_ids=[None]*TrainData.dataset.__len__()
 	per_epoch_loss = 0
+	print('Training')
 	for idx, Sample in enumerate(TrainData):
-		if(idx%100==0):
-			print('TRAINING ON BATCH:',idx)
+		# if(idx%100==0):
+		# 	print('TRAINING ON BATCH:',idx)
 		start,end = (idx*args.batch_size), min((idx*args.batch_size)+args.batch_size, TrainData.dataset.__len__())
 		optimizer.zero_grad()
 		# get HM profiles
@@ -193,7 +194,7 @@ def train(TrainData):
 
 
 
-def test(ValidData):
+def test(ValidData,split_name):
 	model.eval()
 
 	diff_targets = torch.zeros(ValidData.dataset.__len__(),1)
@@ -205,9 +206,10 @@ def test(ValidData):
 	num_batches = int(math.ceil(ValidData.dataset.__len__()/float(args.batch_size)))
 	all_gene_ids=[None]*ValidData.dataset.__len__()
 	per_epoch_loss = 0
+	print(split_name)
 	for idx, Sample in enumerate(ValidData):
-		if(idx%100==0):
-			print('TESTING ON BATCH:',idx)
+		# if(idx%100==0):
+		# 	print('TESTING ON BATCH:',idx)
 		start,end = (idx*args.batch_size), min((idx*args.batch_size)+args.batch_size, ValidData.dataset.__len__())
 		optimizer.zero_grad()
 		# get HM profiles
@@ -240,35 +242,42 @@ def test(ValidData):
 
 
 best_valid_loss = 10000000000
-best_valid_MSE=100000
-best_valid_R2=-1
+best_valid_avgAUPR=-1
+best_valid_avgAUC=-1
+best_test_avgAUC=-1
 if(args.test_on_saved_model==False):
 	for epoch in range(0, args.epochs):
 		print('=---------------------------------------- Training '+str(epoch+1)+' -----------------------------------=')
 		diff_predictions,diff_targets,alpha_train,beta_train,train_loss,_ = train(Train)
-		train_MSE, train_R2 = evaluate.compute_metrics(diff_predictions,diff_targets)
-		diff_predictions,diff_targets,alpha_valid,beta_valid,valid_loss,gene_ids_valid = test(Valid)
-		valid_MSE, valid_R2 = evaluate.compute_metrics(diff_predictions,diff_targets)
+		train_avgAUPR, train_avgAUC = evaluate.compute_metrics(diff_predictions,diff_targets)
 
-		if(valid_R2 >= best_valid_R2):
+		diff_predictions,diff_targets,alpha_valid,beta_valid,valid_loss,gene_ids_valid = test(Valid,"Validation")
+		valid_avgAUPR, valid_avgAUC = evaluate.compute_metrics(diff_predictions,diff_targets)
+
+		diff_predictions,diff_targets,alpha_test,beta_test,test_loss,gene_ids_test = test(Test,'Testing')
+		test_avgAUPR, test_avgAUC = evaluate.compute_metrics(diff_predictions,diff_targets)
+
+		if(valid_avgAUC >= best_valid_avgAUC):
 				# save best epoch -- models converge early
-			best_valid_R2=valid_R2
-			torch.save(model,model_dir+"/"+model_name+'_R2_model.pt')
+			best_valid_avgAUC = valid_avgAUC
+			best_test_avgAUC = test_avgAUC
+			torch.save(model,model_dir+"/"+model_name+'_avgAUC_model.pt')
 
 		print("Epoch:",epoch)
-		print("train R2:",train_R2)
-		print("valid R2:",valid_R2)
-		print("best valid R2:", best_valid_R2)
+		print("train avgAUC:",train_avgAUC)
+		print("valid avgAUC:",valid_avgAUC)
+		print("test avgAUC:",test_avgAUC)
+		print("best valid avgAUC:", best_valid_avgAUC)
+		print("best test avgAUC:", best_test_avgAUC)
 
  
 	print("finished training!!")
-	print("best validation R2:",best_valid_R2)
+	print("best validation avgAUC:",best_valid_avgAUC)
 	print("testing")
-	model=torch.load(model_dir+"/"+model_name+'_R2_model.pt')
+	model=torch.load(model_dir+"/"+model_name+'_avgAUC_model.pt')
 
-	diff_predictions,diff_targets,alpha_test,beta_test,test_loss,gene_ids_test = test(Test)
-	test_MSE, test_R2 = evaluate.compute_metrics(diff_predictions,diff_targets)
-	print("test R2:",test_R2)
+	
+	# print("test avgAUC:",test_avgAUC)
 
 	if(args.save_attention_maps):
 		attentionfile=open(attentionmapfile,'w')
@@ -284,11 +293,10 @@ if(args.test_on_saved_model==False):
 
 
 else:
-	model=torch.load(model_dir+"/"+model_name+'_R2_model.pt')
+	model=torch.load(model_dir+"/"+model_name+'_avgAUC_model.pt')
 	diff_predictions,diff_targets,alpha_test,beta_test,test_loss,gene_ids_test = test(Test)
-	print(diff_predictions, diff_targets)
-	test_MSE, test_R2 = evaluate.compute_metrics(diff_predictions,diff_targets)
-	print("test R2:",test_R2)
+	test_avgAUPR, test_avgAUC = evaluate.compute_metrics(diff_predictions,diff_targets)
+	print("test avgAUC:",test_avgAUC)
 
 	if(args.save_attention_maps):
 		attentionfile=open(attentionmapfile,'w')

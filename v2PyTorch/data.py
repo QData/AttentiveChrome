@@ -25,16 +25,6 @@ def getlabel(c1):
 
 
 
-def loadDict(filename):
-	# get expression value of each gene from cell*.expr.csv
-	gene_dict={}
-	with open(filename) as fi:
-		for line in fi:
-			geneID,geneExpr=line.split(',')
-			gene_dict[str(geneID)]=float(geneExpr)
-	fi.close()
-	return(gene_dict)
-
 
 def loadData(filename,windows,gene_dict,threshold):
 	with open(filename) as fi:
@@ -69,16 +59,9 @@ def loadData(filename,windows,gene_dict,threshold):
 
 		thresholded_expr = int(data[i+w][7])
 
-		# if gene_dict[geneID] >= threshold:
-		# 	thresholded_expr = 1
-		# else:
-		# 	thresholded_expr = 0
 		attr[count]={
 			'geneID':geneID,
-
-			# 'expr':gene_dict[geneID],
 			'expr':thresholded_expr,
-
 			'hm1':hm1,
 			'hm2':hm2,
 			'hm3':hm3,
@@ -115,20 +98,16 @@ def load_data(args):
 
 	'''
 	print("==>loading train data")
-	# gene_dict1=loadDict(args.data_root+args.cell_1+".expr.csv")
-	# expr_list=np.array(list(gene_dict1.values()))
-	# threshold = np.median(expr_list)
 
-	cell_train_dict1=loadData(args.data_root+"/"+args.cell_1+"/classification/train.csv",args.n_bins,None,None)
+	cell_train_dict1=loadData(args.data_root+"/"+args.cell_type+"/classification/train.csv",args.n_bins,None,None)
 	train_inputs = HMData(cell_train_dict1)
 	print("==>loading valid data")
-	cell_valid_dict1=loadData(args.data_root+"/"+args.cell_1+"/classification/valid.csv",args.n_bins,None,None)
+	cell_valid_dict1=loadData(args.data_root+"/"+args.cell_type+"/classification/valid.csv",args.n_bins,None,None)
 	valid_inputs = HMData(cell_valid_dict1)
 	print("==>loading test data")
-	cell_test_dict1=loadData(args.data_root+"/"+args.cell_1+"/classification/test.csv",args.n_bins,None,None)
+	cell_test_dict1=loadData(args.data_root+"/"+args.cell_type+"/classification/test.csv",args.n_bins,None,None)
 	test_inputs = HMData(cell_test_dict1)
 
-	
 
 	Train = torch.utils.data.DataLoader(train_inputs, batch_size=args.batch_size, shuffle=True)
 	Valid = torch.utils.data.DataLoader(valid_inputs, batch_size=args.batch_size, shuffle=False)
