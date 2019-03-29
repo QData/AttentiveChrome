@@ -39,7 +39,7 @@ class rec_attention(nn.Module):
 		self.bin_context_vector.data.uniform_(-0.1, 0.1)
 
 	def forward(self,iput):
-		alpha=self.softmax(batch_product(iput,self.bin_context_vector))
+		alpha=self.softmax(batch_product(iput,self.bin_context_vector),dim=1)
 		[batch_size,source_length,bin_rep_size2]=iput.size()
 		repres=torch.bmm(alpha.unsqueeze(2).view(batch_size,-1,source_length),iput)
 		return repres,alpha
