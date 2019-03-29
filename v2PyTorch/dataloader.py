@@ -7,8 +7,7 @@ import numpy as np
 class HMData(Dataset):
 	# Dataset class for loading data
 	def __init__(self, input_file, bin_size=100):
-		self.threshold = np.median(np.array(list(self.gene_dict.values())))
-		self.hm_data = self.loadData(input_file, bin_size, self.gene_dict, self.threshold)
+		self.hm_data = self.loadData(input_file, bin_size)
 
 
 	def loadData(self,filename,windows):
