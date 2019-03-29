@@ -1,11 +1,7 @@
 from __future__ import print_function
-import argparse
 import torch
-import csv
 import torch.nn as nn
 import torch.nn.functional as F
-import torch.optim as optim
-from torchvision import datasets, transforms
 import numpy as np
 from pdb import set_trace as stop
 
