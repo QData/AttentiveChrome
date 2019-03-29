@@ -1,9 +1,7 @@
 import torch
 import collections
-import pdb
 import csv
 from kipoi.data import Dataset
-import math
 import numpy as np
 
 class HMData(Dataset):
