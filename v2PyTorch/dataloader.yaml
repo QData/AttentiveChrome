@@ -27,17 +27,14 @@ info: # General information about the dataloader
     license: MIT
 output_schema:
   inputs:
-    associated_metadata: geneID, diff, abs_A
+    associated_metadata: geneID, label
     doc: Histone Modification Bin Matrix
     shape: (100, 5)  # array shape of a single sample (omitting the batch dimension)
   metadata:
     geneID:
       doc: "gene ID"
       type: str
-    diff:
-      doc: "TBD"
-      type: float
-    abs_A:
-      doc: "TBD"
-      type: float
+    label:
+      doc: "label for gene expression (binary)"
+      type: int
 type: Dataset
