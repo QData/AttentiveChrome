@@ -2,8 +2,8 @@ import warnings
 warnings.filterwarnings("ignore")
 import argparse
 import json
-import matplotlib
-import matplotlib.pyplot as plt
+# import matplotlib
+# import matplotlib.pyplot as plt
 import math
 import torch
 import torch.nn as nn
@@ -117,10 +117,10 @@ else:
 	sys.exit("invalid model name")
 
 
-if torch.cuda.device_count() > 1:
+if torch.cuda.device_count() > 0:
 	torch.cuda.manual_seed_all(1)
 	dtype = torch.cuda.FloatTensor
-	cuda.set_device(args.gpuid)
+	# cuda.set_device(args.gpuid)
 	model.type(dtype)
 	print('Using GPU '+str(args.gpuid))
 else:
@@ -241,6 +241,7 @@ if(args.test_on_saved_model==False):
 			best_valid_avgAUC = valid_avgAUC
 			best_test_avgAUC = test_avgAUC
 			torch.save(model.cpu().state_dict(),model_dir+"/"+model_name+'_avgAUC_model.pt')
+			model.type(dtype)
 
 		print("Epoch:",epoch)
 		print("train avgAUC:",train_avgAUC)
@@ -253,13 +254,14 @@ if(args.test_on_saved_model==False):
 	print("finished training!!")
 	print("best validation avgAUC:",best_valid_avgAUC)
 	print("best test avgAUC:",best_test_avgAUC)
+	with open('BestAUCs/'+args.cell_type+'_results.txt','w') as f:
+		f.write(str(best_test_avgAUC)+'\n')
 
 	# print("testing")
 	# model=torch.load(model_dir+"/"+model_name+'_avgAUC_model.pt')
 	# predictions,diff_targets,alpha_test,beta_test,test_loss,gene_ids_test = test(Test,'Testing')
 	# test_avgAUPR, test_avgAUC = evaluate.compute_metrics(predictions,diff_targets)
 	# print("best test avgAUC:",test_avgAUC)
-
 
 	if(args.save_attention_maps):
 		attentionfile=open(attentionmapfile,'w')
