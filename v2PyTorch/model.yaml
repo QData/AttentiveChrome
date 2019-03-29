@@ -3,7 +3,7 @@ args:
   module_file: models.py
   module_obj: att_chrome_model
   weights:
-    url: https://zenodo.org/record/2605593/files/Cell1_attchrome_R2_model.pt?download=1
+    url: https://zenodo.org/record/2605593/files/E003_attchrome_avgAUC_model.pt?download=1
     md5: 44627361842c2946c697da0b1ee6502d
 default_dataloader: . # path to the dataloader directory. Or to the dataloader class, e.g.: `kipoiseq.dataloaders.SeqIntervalDl
 info: # General information about the model

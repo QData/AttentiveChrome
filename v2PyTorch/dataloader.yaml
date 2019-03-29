@@ -3,7 +3,7 @@ args:
   input_file:
     doc: "Path of the histone modification read count file."
     example:
-      url: https://zenodo.org/record/2605593/files/Cell1.test.csv?download=1
+      url: https://zenodo.org/record/2605593/files/test.csv?download=1
       md5: 332d389b6860e39f9863c54544cbd2a4
   bin_size:
     doc: "Size of bin"
