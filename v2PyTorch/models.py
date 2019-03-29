@@ -7,6 +7,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 from torchvision import datasets, transforms
 import numpy as np
+from pdb import set_trace as stop
 
 def batch_product(iput, mat2):
 		result = None
@@ -67,7 +68,6 @@ class recurrent_encoder(nn.Module):
 	def outputlength(self):
 		return self.bin_rep_size
 	def forward(self,single_hm,hidden=None):
-
 		bin_output, hidden = self.rnn(single_hm,hidden)
 		bin_output = bin_output.permute(1,0,2)
 		hm_rep,bin_alpha = self.bin_attention(bin_output)

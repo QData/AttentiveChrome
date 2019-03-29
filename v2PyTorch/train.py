@@ -25,11 +25,11 @@ from pdb import set_trace as stop
 # python train.py --cell_type=Cell1 --model_name=attchrome --epochs=120 --lr=0.0001 --data_root=data/ --save_root=Results/
 
 parser = argparse.ArgumentParser(description='DeepDiff')
-parser.add_argument('--lr', type=float, default=0.0001, help='initial learning rate')
+parser.add_argument('--lr', type=float, default=0.0002, help='initial learning rate')
 parser.add_argument('--model_name', type=str, default='attchrome', help='DeepDiff variation')
 parser.add_argument('--clip', type=float, default=1,help='gradient clipping')
-parser.add_argument('--epochs', type=int, default=90, help='upper epoch limit')
-parser.add_argument('--batch_size', type=int, default=10, help='')
+parser.add_argument('--epochs', type=int, default=30, help='upper epoch limit')
+parser.add_argument('--batch_size', type=int, default=16, help='')
 parser.add_argument('--dropout', type=float, default=0.5, help='dropout applied to layers (0 = no dropout) if n_layers LSTM > 1')
 parser.add_argument('--cell_type', type=str, default='E003', help='cell type 1')
 parser.add_argument('--save_root', type=str, default='./Results/', help='where to save')
@@ -240,7 +240,7 @@ if(args.test_on_saved_model==False):
 				# save best epoch -- models converge early
 			best_valid_avgAUC = valid_avgAUC
 			best_test_avgAUC = test_avgAUC
-			torch.save(model,model_dir+"/"+model_name+'_avgAUC_model.pt')
+			torch.save(model.cpu().state_dict(),model_dir+"/"+model_name+'_avgAUC_model.pt')
 
 		print("Epoch:",epoch)
 		print("train avgAUC:",train_avgAUC)
