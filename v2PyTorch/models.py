@@ -114,7 +114,7 @@ class att_chrome(nn.Module):
 		final_rep_1=final_rep_1.squeeze(1)
 		prediction_m=((self.fdiff1_1(final_rep_1)))
 		
-		return prediction_m
+		return F.sigmoid(prediction_m)
 
 args_dict = {'lr': 0.0001, 'model_name': 'attchrome', 'clip': 1, 'epochs': 2, 'batch_size': 10, 'dropout': 0.5, 'cell_1': 'Cell1', 'save_root': 'Results/Cell1', 'data_root': 'data/', 'gpuid': 0, 'gpu': 0, 'n_hms': 5, 'n_bins': 200, 'bin_rnn_size': 32, 'num_layers': 1, 'unidirectional': False, 'save_attention_maps': False, 'attentionfilename': 'beta_attention.txt', 'test_on_saved_model': False, 'bidirectional': True, 'dataset': 'Cell1'}
 att_chrome_args = AttrDict(args_dict)
