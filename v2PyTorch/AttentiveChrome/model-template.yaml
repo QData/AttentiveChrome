@@ -22,9 +22,9 @@ dependencies:
     conda: # install via conda
       - python=3.5
       - h5py
-      - soumith::pytorch  # specify packages from other channels via <channel>::<package>
       - numpy  
-      - soumith::torchvision    
+      - pytorch::pytorch-cpu 
+      - pytorch::torchvision-cpu   
 schema:  # Model schema
     inputs:
         shape: (100, 5)  # array shape of a single sample (omitting the batch dimension)
