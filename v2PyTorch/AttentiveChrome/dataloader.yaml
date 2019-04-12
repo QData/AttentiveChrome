@@ -12,7 +12,7 @@ dependencies:
     conda: # install via conda
       - python=3.5
       - h5py
-      - soumith::pytorch  # specify packages from other channels via <channel>::<package> 
+      - pytorch::pytorch-cpu
       - numpy     
 info: # General information about the dataloader
     authors: 
