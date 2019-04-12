@@ -10,8 +10,7 @@ args:
     optional: true
 dependencies:
     conda: # install via conda
-      - python=3.5
-      - h5py
+      - python>=3.5
       - pytorch::pytorch-cpu
       - numpy     
 info: # General information about the dataloader
