@@ -1,6 +1,18 @@
-# Using Kipoi to run Attentive Chrome
-Attentive Chrome model can be run using Kipoi, which is a repository of predictive models for genomics. All models in the repo can be used through shared API.
 
+# This folder includes Pytorch version of the  AttentiveChrome Implementation. 
+You can run it via the following command: 
+
+```
+python train.py --cell_type Toy
+```
+
+
+
+## We also provide trained AttentiveChrome models through the Kipoi model zoo 
+
+AttentiveChrome model can be run using Kipoi, which is a repository of predictive models for genomics. All models in the repo can be used through shared API.
+
+- The utility codes to adapt AttentiveChrome to Kipoi are in /kipoiutil
 
 ### Installation Requirements
 * python>=3.5
