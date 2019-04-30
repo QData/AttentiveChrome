@@ -126,7 +126,7 @@ Then, we can perform prediction on this single batch.
 This also returns a numpy array containing the output from the final softmax function.
 
 
-## We have extended attentiveChrome to DeepDiffChrome
+# We have extended attentiveChrome to DeepDiffChrome
 
 
 - [DeepDiff: Deep-learning for predicting Differential
