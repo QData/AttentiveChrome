@@ -125,3 +125,11 @@ Then, we can perform prediction on this single batch.
 
 This also returns a numpy array containing the output from the final softmax function.
 
+
+## We have extended attentiveChrome to DeepDiffChrome
+
+
+- [DeepDiff: Deep-learning for predicting Differential
+gene expression from histone modifications](https://academic.oup.com/bioinformatics/article/34/17/i891/5093224)
+
+- Code Github [https://github.com/QData/DeepDiffChrome](https://github.com/QData/DeepDiffChrome)
