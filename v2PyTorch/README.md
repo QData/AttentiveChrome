@@ -8,7 +8,7 @@ python train.py --cell_type Toy
 
 
 
-## We also provide trained AttentiveChrome models through the Kipoi model zoo 
+## We also provide trained AttentiveChrome models through the Kipoi model zoo  [http://kipoi.org/](http://kipoi.org/)
 
 AttentiveChrome model can be run using Kipoi, which is a repository of predictive models for genomics. All models in the repo can be used through shared API.
 
