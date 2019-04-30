@@ -33,7 +33,7 @@ To make a prediction using an input file, run the following command.
 
 This should produce a tsv file containing the results. To run it using another file, replace "example_file/input+file" with the path of your file.
 
-## Python
+## Python API
 We can also use Attentive Chrome through the Kipoi Python API.
 ### Fetching the model
 First, import kipoi:
