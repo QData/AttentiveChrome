@@ -18,7 +18,7 @@ def compute_aupr(all_targets,all_predictions):
     for i in range(all_targets.shape[1]):
         try:
             precision, recall, thresholds = metrics.precision_recall_curve(all_targets[:,i], all_predictions[:,i], pos_label=1)
-            auPR = metrics.auc(recall,precision,reorder=True)
+            auPR = metrics.auc(recall,precision)#,reorder=True)
             if not math.isnan(auPR):
                 aupr_array.append(numpy.nan_to_num(auPR))
         except: 
