@@ -26,7 +26,7 @@ from pdb import set_trace as stop
 
 parser = argparse.ArgumentParser(description='DeepDiff')
 parser.add_argument('--lr', type=float, default=0.0002, help='initial learning rate')
-parser.add_argument('--model_name', type=str, default='attchrome', help='DeepDiff variation')
+parser.add_argument('--model_type', type=str, default='attchrome', help='DeepDiff variation')
 parser.add_argument('--clip', type=float, default=1,help='gradient clipping')
 parser.add_argument('--epochs', type=int, default=30, help='upper epoch limit')
 parser.add_argument('--batch_size', type=int, default=16, help='')
@@ -48,13 +48,14 @@ args = parser.parse_args()
 
 
 
+
 torch.manual_seed(1)
 
 
 model_name = ''
 model_name += (args.cell_type)+('_')
 
-model_name+=args.model_name
+model_name+=args.model_type
 
 
 
@@ -71,6 +72,9 @@ print('saving results in  from: ',args.save_root)
 model_dir = os.path.join(args.save_root,model_name)
 if not os.path.exists(model_dir):
 	os.makedirs(model_dir)
+
+
+
 attentionmapfile=model_dir+'/'+args.attentionfilename
 print('==>processing data')
 Train,Valid,Test = data.load_data(args)
@@ -80,41 +84,9 @@ Train,Valid,Test = data.load_data(args)
 
 
 
-CON=False
-AUX=False
 print('==>building model')
-if(args.model_name=='raw_d'):
-	model = Model.raw_d(args)
-elif(args.model_name=='raw_c'):
-	model = Model.raw_c(args)
-elif(args.model_name=='raw'):
-	model = Model.raw(args)
-elif(args.model_name=='aux'):
-	args.shared=False
-	model = Model.aux(args)
-	AUX=True
-	args.gamma=0.0
-elif(args.model_name=='raw_aux'):
-	args.shared=False
-	model = Model.raw_aux(args)
-	AUX=True
-	args.gamma=0.0
-elif(args.model_name=='aux_siamese'):
-	CON=True
-	args.shared=True
-	model = Model.aux_siamese(args)
-	AUX=True
-	args.gamma=4.0
-elif(args.model_name=='raw_aux_siamese'):
-	CON=True
-	args.shared=True
-	model = Model.raw_aux_siamese(args)
-	AUX=True
-	args.gamma=4.0
-elif(args.model_name=='attchrome'):
-	model = Model.att_chrome(args)
-else:
-	sys.exit("invalid model name")
+model = Model.att_chrome(args)
+
 
 
 if torch.cuda.device_count() > 0:
@@ -251,17 +223,11 @@ if(args.test_on_saved_model==False):
 		print("best test avgAUC:", best_test_avgAUC)
 
  
-	print("finished training!!")
-	print("best validation avgAUC:",best_valid_avgAUC)
-	print("best test avgAUC:",best_test_avgAUC)
-	with open('BestAUCs/'+args.cell_type+'_results.txt','w') as f:
-		f.write(str(best_test_avgAUC)+'\n')
+	print("\nFinished training")
+	print("Best validation avgAUC:",best_valid_avgAUC)
+	print("Best test avgAUC:",best_test_avgAUC)
 
-	# print("testing")
-	# model=torch.load(model_dir+"/"+model_name+'_avgAUC_model.pt')
-	# predictions,diff_targets,alpha_test,beta_test,test_loss,gene_ids_test = test(Test,'Testing')
-	# test_avgAUPR, test_avgAUC = evaluate.compute_metrics(predictions,diff_targets)
-	# print("best test avgAUC:",test_avgAUC)
+
 
 	if(args.save_attention_maps):
 		attentionfile=open(attentionmapfile,'w')
