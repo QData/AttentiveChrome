@@ -37,6 +37,11 @@ We have provided a toy dataset to test out model in the data subdirectory of v2P
 
 The complete set of 56 Cell Type datasets is located at https://zenodo.org/record/2652278
 
+The rows are bins for all genes (100 rows per gene) and the columns are organised as follows:
+
+GeneID, Bin ID, H3K27me3 count, H3K36me3 count, H3K4me1 count, H3K4me3 count, H3K9me3 counts, Binary Label for gene expression (0/1)  
+e.g. 000003,1,4,3,0,8,4,1
+
 **Running The Model** 
 
 See the v1LuaTorch or v2PyTorch directories to run the code.
