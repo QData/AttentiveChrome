@@ -143,5 +143,7 @@ gene expression from histone modifications](https://academic.oup.com/bioinformat
 ## Meanwhile, here are some links for general data processing tools/guidance on ChIP-seq data:
 
 [https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003326](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003326)
+
 [https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5389943/](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5389943/)
+
 [https://bedtools.readthedocs.io/en/latest/](https://bedtools.readthedocs.io/en/latest/)
