@@ -184,6 +184,7 @@ def test(ValidData,split_name):
 
 		diff_targets[start:end,0] = batch_diff_targets[:,0]
 		all_gene_ids[start:end]=Sample['geneID']
+		batch_predictions = torch.sigmoid(batch_predictions)
 		predictions[start:end] = batch_predictions.data.cpu()
 
 		per_epoch_loss += loss.item()
